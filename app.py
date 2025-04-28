@@ -2,6 +2,8 @@ import streamlit as st
 import joblib
 import re
 import nltk
+from nltk.stem import PorterStemmer
+from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 
 # Load saved models
@@ -11,7 +13,11 @@ vectorizer = joblib.load('tfidf_vectorizer.pkl')
 
 # Download stopwords if not already done
 nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
 stop_words = set(stopwords.words('english'))
+stemmer = PorterStemmer()
+lemmatizer = WordNetLemmatizer()
 
 # Preprocessing function (same as training)
 def preprocess_text(text):
@@ -20,6 +26,7 @@ def preprocess_text(text):
     text = re.sub(r'\W', ' ', text)
     text = re.sub(r'\s+', ' ', text)
     tokens = [word for word in text.split() if word not in stop_words]
+    tokens = [stemmer.stem(lemmatizer.lemmatize(word)) for word in tokens]
     return ' '.join(tokens)
 
 # Prediction function
